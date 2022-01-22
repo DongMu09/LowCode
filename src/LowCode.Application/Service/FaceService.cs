@@ -2,6 +2,7 @@
 using LowCode.Helper;
 using LowCode.IService;
 using LowCode.Model;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ namespace LowCode.Service
         // 百度云中开通对应服务应用的 Secret Key
         private static String clientSecret = "1Izae8ckxoGzsdrdT5I3k1R3ig3lR2VQ";
 
+        [HttpPost]
         public String getAccessToken()
         {
             String authHost = "https://aip.baidubce.com/oauth/2.0/token";
@@ -87,22 +89,27 @@ namespace LowCode.Service
             return result;
         }
 
-
+        
 
         // 人脸对比
-        public string faceMatch(string token, string picture)
+        public string faceMatch(Parameter parameter)
         {
 
-            string host = "https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + token;
+            string host = "https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + parameter.token;
             Encoding encoding = Encoding.Default;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(host);
             request.Method = "post";
             request.KeepAlive = true;
 
-            string p1 = ImgToBase64String(@"C:\Users\HUAWEI\Desktop\srvsetwp\3.jpg");
-            string p2 = ImgToBase64String(picture);
+            string p1 = ImgToBase64String(@"C:\Users\HUAWEI\Desktop\srvsetwp\5.jpg");
+
+           
+            
+
+            //string p2 = ImgToBase64String(picture);
+
             //C:\Users\HUAWEI\Desktop\srvsetwp\4.jpg
-            String str = "[{\"image\": \"" + p1 + "\", \"image_type\": \"BASE64\", \"face_type\": \"LIVE\", \"quality_control\": \"LOW\"},{\"image\": \"" + p2 + "\", \"image_type\": \"BASE64\", \"face_type\": \"IDCARD\", \"quality_control\": \"LOW\"}]";
+            String str = "[{\"image\": \"" + parameter.picture + "\", \"image_type\": \"BASE64\", \"face_type\": \"LIVE\", \"quality_control\": \"LOW\"},{\"image\": \"" + p1 + "\", \"image_type\": \"BASE64\", \"face_type\": \"IDCARD\", \"quality_control\": \"LOW\"}]";
             byte[] buffer = encoding.GetBytes(str);
             request.ContentLength = buffer.Length;
             request.GetRequestStream().Write(buffer, 0, buffer.Length);
@@ -110,19 +117,19 @@ namespace LowCode.Service
             StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.Default);
             string result = reader.ReadToEnd();
 
-
-
             return result;
         }
 
 
-        //图片
-        public string Image()
-        {
+        
 
-            return null;
-        }
 
+    }
+
+    public class Parameter
+    {
+        public string token { get; set; }
+        public string picture { get; set; }
 
     }
 }
